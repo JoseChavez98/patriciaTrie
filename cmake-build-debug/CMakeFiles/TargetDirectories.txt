@@ -1,3 +1,0 @@
-/home/jose/patriciaTrie/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/home/jose/patriciaTrie/cmake-build-debug/CMakeFiles/edit_cache.dir
-/home/jose/patriciaTrie/cmake-build-debug/CMakeFiles/patriciaTrie.dir
