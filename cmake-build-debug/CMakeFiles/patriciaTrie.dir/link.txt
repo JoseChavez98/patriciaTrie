@@ -1,0 +1,1 @@
+/usr/bin/c++  -g   CMakeFiles/patriciaTrie.dir/patricia_trie/main.cpp.o  -o patriciaTrie 
