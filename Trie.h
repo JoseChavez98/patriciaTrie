@@ -18,39 +18,50 @@ class Trie {
  public:
 
   Trie() = default;
-  std::pair<Node*,std::string> fetch(std::string nodeContent) {
-    std::pair<Node*,std::string> result;
+  std::pair<Node *, std::string> fetch(std::string nodeContent) {
+    std::pair<Node *, std::string> result;
     std::string testLeft;
     std::string testRight;
     for (auto &root : roots[nodeContent[0]]) {
       auto ptr = root;
 
+      testLeft += ptr->get_content();
+      testRight += ptr->get_content();
       while (ptr != nullptr) {
-        testLeft += ptr->get_content();
-        testRight += ptr->get_content();
-        if (inside(testLeft , nodeContent)) {
-          if(inside(testLeft+=ptr->get_left()->get_content(),nodeContent)){
-            ptr=ptr->get_left();
-          }
-          else if(inside(testLeft+=ptr->get_right()->get_content(),nodeContent)){
-            ptr=ptr->get_right();
-          }
-          else{
-            if (this->globalIndex == 0) {
-              break;
+        if (inside(testLeft, nodeContent)) {
+          if (ptr->get_left() == nullptr) {
+            if (inside(testLeft += ptr->get_left()->get_content(), nodeContent)) {
+              ptr = ptr->get_left();
+              testRight = testLeft;
+            } else if (ptr->get_right() != nullptr) {
+              if (inside(testRight += ptr->get_right()->get_content(), nodeContent)) {
+                ptr = ptr->get_right();
+                testLeft = testRight;
+              } else {
+                result.first = ptr;
+                result.second = testRight;
+                return result;
+              }
             } else {
-              result.first=ptr;
-              if(testLeft.size()<testRight.size()){
-                result.second=testRight;
+              if (this->globalIndex == 0) {
+                break;
+              } else {
+                result.first = ptr;
+                if (testLeft.size() < testRight.size()) {
+                  result.second = testRight;
+                } else if (testLeft.size() > testRight.size()) {
+                  result.second = testLeft;
+                } else {
+                  result.second = testLeft;
+                }
+                return result;
               }
-              else if(testLeft.size()>testRight.size()){
-                result.second=testLeft;
-              }
-              else{
-                result.second=testLeft;
-              }
-              return result;
-          }}
+            }
+          } else {
+            result.first = ptr;
+            result.second = testLeft;
+            return result;
+          }
         } /*else if (inside(testRight, nodeContent)) {
           ptr = ptr->get_right();
         } else {
@@ -107,7 +118,7 @@ class Trie {
         auto *createdNode = new Node(extra3);
         newnode->setRight(createdNode);
       } else {
-        auto *newroot= new Node(nodeContent);
+        auto *newroot = new Node(nodeContent);
         roots[nodeContent[0]].push_back(newroot);
       }
     }
