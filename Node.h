@@ -17,12 +17,12 @@ class Node {
  public:
 
   explicit Node(std::string content) { this->content = content; }
-  ~Node() {
+  /*~Node() {
     delete content;
     delete right;
     delete left;
     delete extra_child_end;
-  }
+  }*/
   void setContent(std::string newcontent) {
     this->content = newcontent;
   }

@@ -9,6 +9,7 @@
 #include <map>
 #include <vector>
 #include "Node.h"
+#include <queue>
 
 class Trie {
  private:
@@ -23,13 +24,13 @@ class Trie {
     std::string testLeft;
     std::string testRight;
     for (auto &root : roots[nodeContent[0]]) {
-      auto ptr = root;
+      auto *ptr = root;
 
       testLeft += ptr->get_content();
       testRight += ptr->get_content();
       while (ptr != nullptr) {
         if (inside(testLeft, nodeContent)) {
-          if (ptr->get_left() == nullptr) {
+          if (ptr->get_left() != nullptr) {
             if (inside(testLeft += ptr->get_left()->get_content(), nodeContent)) {
               ptr = ptr->get_left();
               testRight = testLeft;
@@ -62,29 +63,22 @@ class Trie {
             result.second = testLeft;
             return result;
           }
-        } /*else if (inside(testRight, nodeContent)) {
-          ptr = ptr->get_right();
         } else {
-          if (this->globalIndex == 0) {
-            break;
+          result.first = ptr;
+          if (testLeft.size() < testRight.size()) {
+            result.second = testRight;
+          } else if (testLeft.size() > testRight.size()) {
+            result.second = testLeft;
           } else {
-            result.first=ptr;
-            if(testLeft.size()<testRight.size()){
-              result.second=testRight;
-            }
-            else if(testLeft.size()>testRight.size()){
-              result.second=testLeft;
-            }
-            else{
-              result.second=testLeft;
-            }
-            return result;
+            result.second = testLeft;
           }
-        }*/
-
+          return result;
+        }
 
       }
-      return nullptr;
+      result.first = nullptr;
+      result.second = "";
+      return result;
     }
   }
   void insert(std::string nodeContent) {
@@ -92,31 +86,40 @@ class Trie {
       Node *newnode = new Node(nodeContent);
       roots[nodeContent[0]].push_back(newnode);
     } else {
-      Node *newnode = fetch(nodeContent).first;
+      auto result = fetch(nodeContent);
+      Node *problemNode = result.first;
 
-      if (newnode != nullptr) {
+      if (problemNode != nullptr) {
         std::string extra1;
         std::string extra2;
         std::string extra3;
-        for (int character = 0; newnode->get_content().size(); character++) {
+        for (int character = 0; character < problemNode->get_content().size(); character++) {
           if (character < this->globalIndex) {
-            extra1.push_back(newnode->get_content()[character]);
+            extra1.push_back(problemNode->get_content()[character]);
           } else {
-            extra2.push_back(newnode->get_content()[character]);
+            extra2.push_back(problemNode->get_content()[character]);
           }
         }
 
         Node *derivateNode = new Node(extra2);
-        derivateNode->setLeft(newnode->get_left());
-        derivateNode->setRight(newnode->get_right());
-        newnode->setContent(extra1);
-        newnode->setLeft(derivateNode);
+        derivateNode->setLeft(problemNode->get_left());
+        derivateNode->setRight(problemNode->get_right());
+        problemNode->setContent(extra1);
+        problemNode->setLeft(derivateNode);
+
+        /*if (nodeContent.size() > result.second.size()) {
+          extra3 = nodeContent.substr(0, nodeContent.find(result.second));
+        } else if (nodeContent.size() < result.second.size()) {
+          extra3 = result.second.substr(0, result.second.find(nodeContent));
+        } else {
+          extra3 = nodeContent.substr(0, nodeContent.find(result.second));
+        }*/
 
         for (int character = globalIndex; character < nodeContent.size(); character++) {
           extra3.push_back(nodeContent[character]);
         }
         auto *createdNode = new Node(extra3);
-        newnode->setRight(createdNode);
+        problemNode->setRight(createdNode);
       } else {
         auto *newroot = new Node(nodeContent);
         roots[nodeContent[0]].push_back(newroot);
@@ -128,7 +131,16 @@ class Trie {
   void show_words(std::string testString) {}
 
   bool inside(std::string subject, std::string wordToCompare) {
-    if (subject.size() < wordToCompare.size()) {
+    if (subject.size() < wordToCompare.size() or subject.size() == wordToCompare.size()) {
+      for (int index = 0; index < subject.size(); index++) {
+        if (subject[index] != wordToCompare[index]) {
+          this->globalIndex = index;
+          return false;
+        }
+      }
+
+      return true;
+    } else {
       for (int index = 0; index < subject.size(); index++) {
         if (subject[index] != wordToCompare[index]) {
           this->globalIndex = index;
@@ -136,9 +148,28 @@ class Trie {
         }
       }
       return true;
-    } else {
-      return false;
     }
+  }
+
+  void level_print() {
+
+    std::queue<Node *> q;
+    Node *n;
+
+    q.push(roots['r'][0]);
+
+    while (!q.empty()) {
+      n = q.front();
+      q.pop();
+
+      std::cout << n->get_content() << " ";
+
+      if (n->get_left() != nullptr)
+        q.push(n->get_left());
+
+      if (n->get_right() != nullptr)
+        q.push(n->get_right());
+    };
   }
 
 };
