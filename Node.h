@@ -7,40 +7,42 @@
 
 #include <iostream>
 
-class Node{
+class Node {
  private:
   std::string content;
-  Node *right= nullptr;
-  Node *left= nullptr;
-  bool extra_child_end=false;
+  Node *right = nullptr;
+  Node *left = nullptr;
+  bool extra_child_end = false;
 
  public:
 
-  explicit Node(std::string content){this->content=content;}
-  ~Node(){
+  explicit Node(std::string content) { this->content = content; }
+  ~Node() {
     delete content;
     delete right;
     delete left;
     delete extra_child_end;
   }
-
-  void setRight(Node *node){
-    this->right=node;
+  void setContent(std::string newcontent) {
+    this->content = newcontent;
   }
-  void setLeft(Node *node){
-    this->left=node;
+  void setRight(Node *node) {
+    this->right = node;
   }
-  std::string get_content(){
+  void setLeft(Node *node) {
+    this->left = node;
+  }
+  std::string get_content() {
     return this->content;
   }
-  Node *get_right(){
+  Node *get_right() {
     return this->right;
   }
-  Node *get_left(){
+  Node *get_left() {
     return this->left;
   }
 
-  void describe_path(){
+  void describe_path() {
 
   }
 };
